@@ -1,0 +1,103 @@
+<job id="Action-WSUSFactoryReset">
+<script language="VBScript" src="..\..\scripts\ZTIUtility.vbs"/>
+<script language="VBScript"> 
+
+'//----------------------------------------------------------------------------
+'// Purpose: Used to reset the WSUS settings back to Factory default. 
+'// Usage: cscript Action-WSUSFactoryReset.wsf [/debug:true]
+'// Version: 1.0 - 24 Mars 2015 - Mikael Nystrom
+'//
+'// This script is provided "AS IS" with no warranties, confers no rights and 
+'// is not supported by the author. 
+'//----------------------------------------------------------------------------
+
+Option Explicit 
+Dim iRetVal 
+
+'On Error Resume Next
+iRetVal = ZTIProcess
+ProcessResults iRetVal
+On Error Goto 0 
+
+'//---------------------------------------------------------------------------
+'// Function: ZTIProcess()
+'//---------------------------------------------------------------------------
+Function ZTIProcess() 
+
+	'on error resume next
+	Dim sRegKey
+	Dim oReg
+	Dim objRegistry
+	Dim strKeyPath
+	Dim strValueName
+	Dim strValue
+	Dim sCommand
+	Dim sServiceName
+
+
+	sServiceName = "BITS"
+	oLogging.CreateEntry oUtility.ScriptName & " Stopping " & sServiceName, LogTypeInfo
+	sCommand = "net.exe stop " & sServiceName
+	oUtility.RunWithHeartbeat(sCommand)
+
+	sServiceName = "WUAUSERV"
+	oLogging.CreateEntry oUtility.ScriptName & " Stopping " & sServiceName, LogTypeInfo
+	sCommand = "net.exe stop " & sServiceName
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing UseWUServer", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU\ /v UseWUServer /f"
+	oUtility.RunWithHeartbeat(sCommand)
+	
+	oLogging.CreateEntry oUtility.ScriptName & " Removing WUServer", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\ /v WUServer /f"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing PingID", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate /v PingID /f"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing AccountDomainSid", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate /v AccountDomainSid /f"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing SusClientId", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate /v SusClientId /f"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing SusClientIDValidation", LogTypeInfo
+	sCommand = "reg.exe Delete HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate /v SusClientIDValidation /f"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing c:\Windows\SoftwareDistribution", LogTypeInfo
+	sCommand = "CMD /C rmdir /Q /S c:\Windows\SoftwareDistribution"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing c:\Windows\WindowsUpdate.log", LogTypeInfo
+	sCommand = "CMD /C del c:\Windows\WindowsUpdate.log"
+	oUtility.RunWithHeartbeat(sCommand)
+
+	oLogging.CreateEntry oUtility.ScriptName & " Removing c:\Windows\WindowsUpdate.log", LogTypeInfo
+	sCommand = "CMD /C Del ""%ALLUSERSPROFILE%\Application Data\Microsoft\Network\Downloader\qmgr*.dat"""
+	oUtility.RunWithHeartbeat(sCommand)
+	
+	sServiceName = "WUAUSERV"
+	oLogging.CreateEntry oUtility.ScriptName & " Starting " & sServiceName, LogTypeInfo
+	sCommand = "net.exe start " & sServiceName
+	oUtility.RunWithHeartbeat(sCommand)
+	
+	sServiceName = "BITS"
+	oLogging.CreateEntry oUtility.ScriptName & " Starting " & sServiceName, LogTypeInfo
+	sCommand = "net.exe start " & sServiceName
+	oUtility.RunWithHeartbeat(sCommand)	
+
+	oLogging.CreateEntry oUtility.ScriptName & " Running wuauclt.exe /resetauthorization /detectnow", LogTypeInfo
+	sCommand = "wuauclt.exe /resetauthorization /detectnow"
+	oUtility.RunWithHeartbeat(sCommand)
+	
+	oLogging.CreateEntry oUtility.ScriptName & " Done ", LogTypeInfo
+End Function 
+
+</script>
+</job>
+
