@@ -37,7 +37,7 @@ $OrganizationalUnitDN = $TargetOU+","+$CurrentDomain
 $SearchAccount = Get-ADUser $Account
 
 $SAM = $SearchAccount.SamAccountName
-$UserAccount = $CurrentDomain.NetBIOSName+""+$SAM
+$UserAccount = $CurrentDomain.NetBIOSName+"\"+$SAM
 
 Write-Host "Account is = $UserAccount"
 Write-host "OU is =" $OrganizationalUnitDN
