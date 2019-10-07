@@ -23,3 +23,11 @@ $LogPathRoot = "X:\ScriptLogs"
 ![OSAfter](https://github.com/BronsonMagnan/MDTAutomation/blob/master/WimImportAutomation/OperatingSystemsFolderAfter.png)
 
 
+## How it Works
+
+1. The WimImportAutomation creates two members of class MDTDeploymentShare, One Production, and One Reference.
+2. The WimImportAutomation class asks the Reference instance to send over a collection of class CapturedWim using the GetCapturedWim method. When these CapturedWim objects are instantiated, they contain a composition of the WimInfo class, which is created. When the WimInfo class has ProcessInfo called, it is a wrapper for the DISM executable.
+3. The WimImportAutomation class then takes the collection of CapturedWim objects and sends them to Production MDTDeploymentShare using the method ImportOperatingSystem. 
+4. The WimImportAutomation class then askes the Production instance to rename the operating system with method RenameOperatingSystem.
+5. Inside the MDTDeploymentShare class, there is getting, testing, and setting of the operating system folder structure to make it idempotent, and then the MDT OS Import comamnd is called.
+
