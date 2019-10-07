@@ -31,3 +31,6 @@ $LogPathRoot = "X:\ScriptLogs"
 4. The WimImportAutomation class then askes the Production instance to rename the operating system with method RenameOperatingSystem.
 5. Inside the MDTDeploymentShare class, there is getting, testing, and setting of the operating system folder structure to make it idempotent, and then the MDT OS Import comamnd is called.
 
+# UML Diagram
+![UML](https://github.com/BronsonMagnan/MDTAutomation/blob/master/WimImportAutomation/UML.png)
+
